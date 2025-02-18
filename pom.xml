@@ -10,13 +10,28 @@
     <packaging>pom</packaging>
     <modules>
         <module>Menu_Panel</module>
-
     </modules>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- SonarQube Properties -->
+        <sonar.host.url>http://localhost:9000</sonar.host.url> <!-- Replace with your SonarQube server URL -->
+        <sonar.login>your-sonar-token</sonar.login> <!-- Replace with your SonarQube token -->
+        <sonar.projectKey>Menu_panels</sonar.projectKey> <!-- Unique key for your project -->
+        <sonar.projectName>Menu Panels</sonar.projectName> <!-- Display name for your project -->
     </properties>
 
+    <build>
+        <plugins>
+            <!-- Add SonarQube Maven Plugin -->
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version> <!-- Use the latest version -->
+            </plugin>
+        </plugins>
+    </build>
 </project>
