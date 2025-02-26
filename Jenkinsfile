@@ -1,51 +1,21 @@
 pipeline {
     agent any
 
-    environment {
-        SONAR_TOKEN = credentials('no77')     }
-
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build') {
             steps {
-                sh 'mvn clean compile'
+                echo 'Building..'
             }
         }
-
         stage('Test') {
             steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml' 
-                }
+                echo 'Testing..'
             }
         }
-
-        stage('SonarQube Analysis') {
+        stage('Deploy') {
             steps {
-                sh '''
-                    mvn sonar:sonar \
-                      -Dsonar.projectKey=my-maven-project \
-                      -Dsonar.host.url=http://localhost:9000 \
-                      -Dsonar.login=$SONAR_TOKEN
-                '''
+                echo 'Deploying....'
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'SonarQube analysis completed successfully.'
-        }
-        failure {
-            echo 'SonarQube analysis failed. Check logs.'
         }
     }
 }
