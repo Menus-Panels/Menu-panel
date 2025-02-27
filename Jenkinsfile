@@ -1,20 +1,41 @@
 pipeline {
     agent any
+    tools {
+        maven 'maven3'
+    }
+
+    environment {
+        SONAR_HOST_URL = 'http://localhost:9000'
+        SONAR_AUTH_TOKEN = credentials('sonarqube')
+    }
 
     stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'master', url: 'https://github.com/Menus-Panels/Menu-panel.git'
+            }
+        }
+
         stage('Build') {
             steps {
-                echo 'Building..'
+                sh 'mvn compile'
             }
         }
+
         stage('Test') {
             steps {
-                echo 'Testing..'
+                sh 'mvn test'
             }
         }
-        stage('Deploy') {
+
+        stage('SonarQube Analysis') {
             steps {
-                echo 'Deploying....'
+                sh """
+                mvn sonar:sonar \
+                -Dsonar.projectKey=sample_project \
+                -Dsonar.host.url=$SONAR_HOST_URL \
+                -Dsonar.login=$SONAR_AUTH_TOKEN
+                """
             }
         }
     }
