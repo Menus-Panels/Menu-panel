@@ -1,5 +1,5 @@
 pipeline {
-    agent any    
+    agent { label 'Clean_Code' }    
 
     environment {
         SONAR_TOKEN = credentials('0a1727a947dd15b2d22927e39847ad3059dadcb5')
