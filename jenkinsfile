@@ -1,8 +1,14 @@
 pipeline {
     agent any    
 
-environment {
-        SONAR_TOKEN = credentials('0a1727a947dd15b2d22927e39847ad3059dadcb5')     }
+    environment {
+        SONAR_TOKEN = credentials('0a1727a947dd15b2d22927e39847ad3059dadcb5')
+    }
+
+    tools {
+        terraform 'terraform1'
+        maven 'maven3'
+    }
 
     stages {
         stage('Checkout') {
@@ -26,26 +32,54 @@ environment {
                     junit '**/target/surefire-reports/*.xml' 
                 }
             }
+        }
 
-stage('SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
                 sh '''
                     mvn sonar:sonar \
-                      -Dsonar.projectKey=my-maven-project \
+                      -Dsonar.projectKey=my-maven-project32 \
                       -Dsonar.host.url=http://localhost:9000 \
                       -Dsonar.login=$SONAR_TOKEN
                 '''
+            }
+        }
+
+        stage('Terraform Init') {
+            steps {
+                echo "Initializing Terraform..."
+                sh 'terraform init'
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                echo "Validating Terraform configuration..."
+                sh 'terraform validate'
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                echo "Planning Terraform deployment..."
+                sh 'terraform plan -out=tfplan'
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                echo "Applying Terraform changes..."
+                sh 'terraform apply -auto-approve tfplan'
             }
         }
     }
 
     post {
         success {
-            echo 'SonarQube analysis completed successfully.'
+            echo 'Pipeline execution completed successfully.'
         }
         failure {
-            echo 'SonarQube analysis failed. Check logs.'
+            echo 'Pipeline execution failed. Check logs.'
         }
     }
-        }
 }
